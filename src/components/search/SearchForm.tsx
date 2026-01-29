@@ -149,7 +149,7 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading, ini
 
   return (
     <Card className="mb-2">
-      <form onSubmit={handleSubmit} className="space-y-3">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         {/* Trip type selector */}
         <div className="flex gap-4 border-b border-gray-100 pb-3">
           <label className="flex items-center cursor-pointer">

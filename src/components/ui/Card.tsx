@@ -13,12 +13,12 @@ export const Card: React.FC<CardProps> = ({
   padding = 'md',
   hover = false,
 }) => {
-  // Padding variations
+  // Padding variations - more responsive on mobile
   const paddingStyles = {
     none: '',
-    sm: 'p-2 md:p-3',
-    md: 'p-3 md:p-4',
-    lg: 'p-4 md:p-6',
+    sm: 'p-2 sm:p-2.5 md:p-3',
+    md: 'p-3 sm:p-3.5 md:p-4',
+    lg: 'p-4 sm:p-5 md:p-6',
   };
 
   return (

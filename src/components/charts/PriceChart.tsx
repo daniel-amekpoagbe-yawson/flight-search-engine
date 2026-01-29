@@ -83,54 +83,54 @@ export const PriceChart: React.FC<PriceChartProps> = ({
   return (
     <Card className="mb-6 bg-gradient-to-br from-slate-50 to-white border border-slate-200">
       {/* Header */}
-      <div className="mb-4">
-        <div className="flex items-center gap-2 mb-6">
-          <h2 className="text-lg font-bold text-slate-900">Price Analysis</h2>
+      <div className="mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-slate-900">Price Analysis</h2>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Stats Grid - Responsive */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
           {/* Average Price */}
-          <div className="bg-gray-50 rounded-xl p-4 border border-slate-200 hover:border-slate-300 transition-colors">
+          <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border border-slate-200 hover:border-slate-300 transition-colors">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-600">Average Price</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 line-clamp-2">Avg Price</span>
             </div>
-            <span className="text-xl font-bold text-slate-900">{formatPrice(priceTrend.average, currency)}</span>
-            <p className="text-xs text-slate-500 mt-2">across all results</p>
+            <span className="text-lg sm:text-xl font-bold text-slate-900">{formatPrice(priceTrend.average, currency)}</span>
+            <p className="text-xs text-slate-500 mt-1">all results</p>
           </div>
 
           {/* Lowest Price */}
-          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 transition-colors">
+          <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-emerald-200 hover:border-emerald-300 transition-colors">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-stone-800">Lowest Price</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700 line-clamp-2">Lowest</span>
             </div>
-            <span className="text-xl font-bold text-stone-700">{formatPrice(priceTrend.lowest, currency)}</span>
-            <p className="text-xs text-stone-600 mt-2">best deal available</p>
+            <span className="text-lg sm:text-xl font-bold text-emerald-700">{formatPrice(priceTrend.lowest, currency)}</span>
+            <p className="text-xs text-emerald-600 mt-1">best deal</p>
           </div>
 
           {/* Highest Price */}
-          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-gray-300 transition-colors">
+          <div className="bg-gradient-to-br from-slate-100 to-slate-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-slate-300 hover:border-slate-400 transition-colors">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-700">Highest Price</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-slate-700 line-clamp-2">Highest</span>
             </div>
-            <span className="text-xl font-bold text-slate-700">{formatPrice(priceTrend.highest, currency)}</span>
-            <p className="text-xs text-slate-600 mt-2">maximum price</p>
+            <span className="text-lg sm:text-xl font-bold text-slate-700">{formatPrice(priceTrend.highest, currency)}</span>
+            <p className="text-xs text-slate-600 mt-1">maximum</p>
           </div>
 
           {/* Potential Savings */}
-          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 transition-colors">
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-blue-200 hover:border-blue-300 transition-colors">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-800">Save Up To</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-blue-700 line-clamp-2">Save</span>
             </div>
-            <span className="text-xl font-bold text-gray-700">{savingsPercent}%</span>
-            <p className="text-xs text-gray-600 mt-2"> average price</p>
+            <span className="text-lg sm:text-xl font-bold text-blue-700">{savingsPercent}%</span>
+            <p className="text-xs text-blue-600 mt-1">average</p>
           </div>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-xl p-6 border border-slate-100">
-        <ResponsiveContainer width="100%" height={350}>
+      <div className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 border border-slate-100 overflow-x-auto">
+        <ResponsiveContainer width="100%" height={300}>
           <AreaChart 
             data={chartData}
             margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
@@ -217,9 +217,9 @@ export const PriceChart: React.FC<PriceChartProps> = ({
       </div>
 
       {/* Footer Info */}
-      <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-        <p className="text-sm text-stone-700">
-          <span className="font-semibold">💡 Tip:</span> The darker line shows your filtered results. Find the lowest point on the chart to identify the best deals in your price range.
+      <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg">
+        <p className="text-xs sm:text-sm text-stone-800">
+          <span className="font-semibold">💡 Tip:</span> The darker line shows your filtered results. Find the lowest point to identify the best deals.
         </p>
       </div>
     </Card>
