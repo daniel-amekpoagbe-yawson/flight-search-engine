@@ -7,17 +7,48 @@ import {formatDuration, formatPrice, getTimeFromISO } from '../../utils/Helper';
 interface FlightCardProps {
   flight: ProcessedFlight;
   dictionaries?: { carriers?: Record<string, string> };
+  isBestDeal?: boolean;
 }
 
-export const FlightCard: React.FC<FlightCardProps> = ({ flight, dictionaries }) => {
+export const FlightCard: React.FC<FlightCardProps> = ({ flight, dictionaries, isBestDeal = false }) => {
   const itinerary = flight.itineraries[0];
   const firstSegment = itinerary.segments[0];
   const lastSegment = itinerary.segments[itinerary.segments.length - 1];
 
   const airlineName = dictionaries?.carriers?.[flight.mainAirline] || flight.mainAirline;
 
+  // Get layover information
+  const getLayoverInfo = () => {
+    if (flight.totalStops === 0) return null;
+    
+    const layovers = [];
+    for (let i = 0; i < itinerary.segments.length - 1; i++) {
+      const currentSegment = itinerary.segments[i];
+      const nextSegment = itinerary.segments[i + 1];
+      
+      const arrivalTime = new Date(currentSegment.arrival.at);
+      const departureTime = new Date(nextSegment.departure.at);
+      const layoverMinutes = Math.round((departureTime.getTime() - arrivalTime.getTime()) / 60000);
+      
+      layovers.push({
+        airport: currentSegment.arrival.iataCode,
+        duration: layoverMinutes,
+      });
+    }
+    return layovers;
+  };
+
+  const layovers = getLayoverInfo();
+
   return (
-    <Card hover className="mb-4">
+    <Card hover className="mb-4 relative overflow-hidden">
+      {/* Best Deal Badge */}
+      {isBestDeal && (
+        <div className="absolute top-0 right-0 bg-linear-to-r from-green-500 to-emerald-600 text-white px-4 py-2 rounded-bl-lg font-semibold text-sm">
+          ✓ Best Deal
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Flight details - Left side */}
         <div className="md:col-span-9 space-y-4">
@@ -61,6 +92,19 @@ export const FlightCard: React.FC<FlightCardProps> = ({ flight, dictionaries }) 
               <div className="text-sm text-gray-600">{lastSegment.arrival.iataCode}</div>
             </div>
           </div>
+
+          {/* Layover Information */}
+          {layovers && layovers.length > 0 && (
+            <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-semibold text-gray-700">Layover Details:</p>
+              {layovers.map((layover, idx) => (
+                <div key={idx} className="flex items-center justify-between text-xs text-gray-600">
+                  <span>{layover.airport}</span>
+                  <span className="font-medium">{Math.floor(layover.duration / 60)}h {layover.duration % 60}m</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Price and CTA - Right side */}

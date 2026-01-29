@@ -1,16 +1,12 @@
-/**
- * SearchForm Component
- * Main flight search form with airport selection and travel details
- * Features autocomplete for airports and date validation
- */
+
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '../components/ui/Button';
-import { Input } from '../components/ui/Input';
-import { Select } from '../components/ui/Select';
-import { Card } from '../components/ui/Card';
-import { useAirportSearch } from '../hooks/useFlights';
-import type { SearchParams, AirportSearchResult } from '../types/flight';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { Select } from '../../components/ui/Select';
+import { Card } from '../../components/ui/Card';
+import { useAirportSearch } from '../../hooks/useFlights';
+import type { SearchParams, AirportSearchResult } from '../../types/flight';
 
 interface SearchFormProps {
   onSearch: (params: SearchParams) => void;

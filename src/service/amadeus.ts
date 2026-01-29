@@ -20,10 +20,10 @@ class AmadeusService {
   constructor() {
     // Initialize axios instance with base configuration
     this.api = axios.create({
-      baseURL: import.meta.env.VITE_AMADEUS_API_URL || 'https://test.api.amadeus.com/v2',
+      baseURL: 'https://test.api.amadeus.com/v2',
       timeout: 30000, // 30 second timeout for flight searches
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
       },
     });
 
@@ -107,7 +107,13 @@ class AmadeusService {
    */
   async searchAirports(keyword: string): Promise<AirportSearchResult[]> {
     try {
-      const response = await this.api.get('/reference-data/locations', {
+      // Ensure we have a valid token
+      await this.ensureValidToken();
+      
+      const response = await axios.get('https://test.api.amadeus.com/v1/reference-data/locations', {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
         params: {
           subType: 'AIRPORT,CITY',
           keyword,

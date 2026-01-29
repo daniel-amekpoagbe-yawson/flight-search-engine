@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button';
 import { PriceFilter } from './PriceFilter';
 import { StopsFilter } from './StopsFilter';
 import { AirlineFilter } from './AirlineFilter';
+import { TimeFilter } from './TimeFilter';
 import type { FilterState } from '../../types/flight';
 
 interface FilterPanelProps {
@@ -60,6 +61,24 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
 
         <div className="border-t border-gray-200" />
 
+        {/* Departure Time Filter */}
+        <TimeFilter
+          label="Departure Time"
+          value={filters.departureTimeRange}
+          onChange={(value) => updateFilter('departureTimeRange', value)}
+        />
+
+        <div className="border-t border-gray-200" />
+
+        {/* Arrival Time Filter */}
+        <TimeFilter
+          label="Arrival Time"
+          value={filters.arrivalTimeRange}
+          onChange={(value) => updateFilter('arrivalTimeRange', value)}
+        />
+
+        <div className="border-t border-gray-200" />
+
         {/* Stops Filter */}
         <StopsFilter
           value={filters.stops}
@@ -73,7 +92,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           airlines={filterOptions.airlines}
           selected={filters.airlines}
           onChange={(value) => updateFilter('airlines', value)}
-          dictionaries={dictionaries?.carriers}
+          dictionaries={dictionaries}
         />
       </div>
     </Card>

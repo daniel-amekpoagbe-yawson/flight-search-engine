@@ -111,7 +111,7 @@ src/
 
 ```
 
-### Create `src/components/results/FlightList.tsx`
+### Create `src/components/results/`
 
 ```tsx
 /**
@@ -119,47 +119,7 @@ src/
  * Container for flight results with sorting and empty states
  */
 
-import React from 'react';
-import { FlightCard } from './FlightCard';
-import type { ProcessedFlight } from '@/types';
 
-interface FlightListProps {
-  flights: ProcessedFlight[];
-  dictionaries?: { carriers?: Record<string, string> };
-  isLoading?: boolean;
-}
-
-export const FlightList: React.FC<FlightListProps> = ({
-  flights,
-  dictionaries,
-  isLoading,
-}) => {
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-      </div>
-    );
-  }
-
-  if (flights.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="text-gray-400 text-6xl mb-4">✈️</div>
-        <h3 className="text-lg font-semibold text-gray-700 mb-2">No flights found</h3>
-        <p className="text-gray-500">Try adjusting your filters or search criteria</p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      {flights.map((flight) => (
-        <FlightCard key={flight.id} flight={flight} dictionaries={dictionaries} />
-      ))}
-    </div>
-  );
-};
 ```
 
 ---
@@ -169,125 +129,7 @@ export const FlightList: React.FC<FlightListProps> = ({
 ### Create `src/components/charts/PriceChart.tsx`
 
 ```tsx
-/**
- * PriceChart Component
- * Real-time price trend visualization using Recharts
- * Updates dynamically as filters are applied
- */
-
-import React, { useMemo } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
-import { Card } from '@/components/ui/Card';
-import type { PriceTrend } from '@/types';
-import { formatPrice } from '@/utils/helpers';
-
-interface PriceChartProps {
-  priceTrend: PriceTrend;
-  currency?: string;
-}
-
-export const PriceChart: React.FC<PriceChartProps> = ({
-  priceTrend,
-  currency = 'USD',
-}) => {
-  // Group data by price buckets for cleaner visualization
-  const chartData = useMemo(() => {
-    const allPrices = priceTrend.current.map(d => d.price).sort((a, b) => a - b);
-    const filteredPrices = priceTrend.filtered.map(d => d.price).sort((a, b) => a - b);
-
-    // Create buckets
-    const bucketSize = 50;
-    const min = Math.floor(Math.min(...allPrices) / bucketSize) * bucketSize;
-    const max = Math.ceil(Math.max(...allPrices) / bucketSize) * bucketSize;
-    
-    const buckets: Record<number, { all: number; filtered: number }> = {};
-    
-    for (let i = min; i <= max; i += bucketSize) {
-      buckets[i] = { all: 0, filtered: 0 };
-    }
-
-    // Count flights in each bucket
-    allPrices.forEach(price => {
-      const bucket = Math.floor(price / bucketSize) * bucketSize;
-      if (buckets[bucket]) buckets[bucket].all++;
-    });
-
-    filteredPrices.forEach(price => {
-      const bucket = Math.floor(price / bucketSize) * bucketSize;
-      if (buckets[bucket]) buckets[bucket].filtered++;
-    });
-
-    return Object.entries(buckets).map(([price, counts]) => ({
-      price: Number(price),
-      allFlights: counts.all,
-      filtered: counts.filtered,
-    }));
-  }, [priceTrend]);
-
-  return (
-    <Card className="mb-6">
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Price Distribution</h2>
-        <div className="flex gap-6 text-sm">
-          <div>
-            <span className="text-gray-600">Average: </span>
-            <span className="font-semibold">{formatPrice(priceTrend.average, currency)}</span>
-          </div>
-          <div>
-            <span className="text-gray-600">Lowest: </span>
-            <span className="font-semibold text-green-600">{formatPrice(priceTrend.lowest, currency)}</span>
-          </div>
-          <div>
-            <span className="text-gray-600">Highest: </span>
-            <span className="font-semibold text-red-600">{formatPrice(priceTrend.highest, currency)}</span>
-          </div>
-        </div>
-      </div>
-
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis 
-            dataKey="price" 
-            tickFormatter={(value) => `$${value}`}
-            label={{ value: 'Price', position: 'insideBottom', offset: -5 }}
-          />
-          <YAxis label={{ value: '# of Flights', angle: -90, position: 'insideLeft' }} />
-          <Tooltip 
-            formatter={(value) => [`${value} flights`, '']}
-            labelFormatter={(value) => `Price: $${value}`}
-          />
-          <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="allFlights" 
-            stroke="#9CA3AF" 
-            strokeWidth={2}
-            name="All Flights"
-            dot={false}
-          />
-          <Line 
-            type="monotone" 
-            dataKey="filtered" 
-            stroke="#3B82F6" 
-            strokeWidth={3}
-            name="Filtered"
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </Card>
-  );
-};
+/
 ```
 
 ---
@@ -297,99 +139,13 @@ export const PriceChart: React.FC<PriceChartProps> = ({
 ### Create `src/routes/__root.tsx`
 
 ```tsx
-import { createRootRoute, Outlet } from '@tanstack/react-router';
 
-export const Route = createRootRoute({
-  component: () => (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">✈️ Flight Search</h1>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <Outlet />
-      </main>
-    </div>
-  ),
-});
 ```
 
 ### Create `src/routes/index.tsx`
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
-import { SearchForm } from '@/components/search/SearchForm';
-import { FilterPanel } from '@/components/filters/FilterPanel';
-import { FlightList } from '@/components/results/FlightList';
-import { PriceChart } from '@/components/charts/PriceChart';
-import { useFlightSearch, useFlightFilters, useFlightSort, usePriceTrend } from '@/hooks/useFlights';
-import type { SearchParams } from '@/types';
 
-function FlightSearchPage() {
-  const [searchParams, setSearchParams] = useState<SearchParams | null>(null);
-
-  // Fetch flights
-  const { flights, dictionaries, isLoading, error } = useFlightSearch(searchParams);
-
-  // Apply filters
-  const { filters, filteredFlights, updateFilter, resetFilters, filterOptions, hasActiveFilters } =
-    useFlightFilters(flights);
-
-  // Sort results
-  const { sortedFlights } = useFlightSort(filteredFlights);
-
-  // Generate price trend data
-  const priceTrend = usePriceTrend(flights, filteredFlights);
-
-  return (
-    <div className="space-y-6">
-      {/* Search Form */}
-      <SearchForm onSearch={setSearchParams} isLoading={isLoading} />
-
-      {/* Error State */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">{error.message}</p>
-        </div>
-      )}
-
-      {/* Results Section */}
-      {flights.length > 0 && (
-        <>
-          {/* Price Chart */}
-          <PriceChart priceTrend={priceTrend} />
-
-          {/* Filters and Results */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Filter Panel - Sidebar */}
-            <div className="lg:col-span-1">
-              <FilterPanel
-                filters={filters}
-                updateFilter={updateFilter}
-                resetFilters={resetFilters}
-                hasActiveFilters={hasActiveFilters}
-                filterOptions={filterOptions}
-                dictionaries={dictionaries}
-                resultCount={filteredFlights.length}
-              />
-            </div>
-
-            {/* Flight Results */}
-            <div className="lg:col-span-3">
-              <FlightList flights={sortedFlights} dictionaries={dictionaries} />
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-export const Route = createFileRoute('/')({
-  component: FlightSearchPage,
-});
 ```
 
 ### Create `src/main.tsx`
@@ -442,33 +198,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar */
-@layer utilities {
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #555;
-  }
-}
-
-/* Smooth animations */
-* {
-  transition-property: background-color, border-color, color, fill, stroke;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
+/
 ```
 
 ---

@@ -1,73 +1,105 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
-import { useFlights } from "../hooks/useFlights";
-import SearchForm from "../components/SearchForm";
-import Filters from "../components/Filters";
-import FlightList from "../components/filters/FlightList";
-import PriceGraph from "../components/PriceGraph";
-import type { FlightOffer } from "../types/flight";
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, useEffect } from 'react';
+import type { SearchParams } from '../types/flight';
+import { useFlightFilters, useFlightSearch, useFlightSort, usePriceTrend } from '../hooks/useFlights';
+import { useSearchParamsURL } from '../hooks/useLocalStorage';
+import { SearchForm } from '../components/search/SearchForm';
+import { PriceChart } from '../components/charts/PriceChart';
+import { FilterPanel } from '../components/filters/FilterPanel';
+import { FlightList } from '../components/results/FlightList';
+import { SortControls } from '../components/results/SortControls';
+import { ShareButton } from '../components/ui/ShareButton';
 
-export const Route = createFileRoute("/")({
-  component: Home,
-});
 
-function Home() {
-  const [params, setParams] = useState<{
-    origin: string;
-    destination: string;
-    date: string;
-  } | null>(null);
+function FlightSearchPage() {
+  const [searchParams, setSearchParams] = useState<SearchParams | null>(null);
+  const { getQueryParams, setQueryParams } = useSearchParamsURL();
 
-  const [filters, setFilters] = useState({
-    maxPrice: 2000,
-    stops: "any" as "any" | "0" | "1" | "2+",
-    airlines: [] as string[],
-  });
+  // Initialize from URL if available
+  useEffect(() => {
+    const urlParams = getQueryParams();
+    if (urlParams && !searchParams) {
+      setSearchParams(urlParams);
+    }
+  }, [getQueryParams, searchParams]);
 
-  const { data, isLoading } = useFlights(params);
+  // Update URL when search params change
+  const handleSearch = (params: SearchParams) => {
+    setSearchParams(params);
+    setQueryParams(params);
+  };
 
-  const flights = data?.data ?? [];
+  // Fetch flights
+  const { flights, dictionaries, isLoading, error } = useFlightSearch(searchParams);
 
-  const filteredFlights = useMemo(() => {
-    return flights.filter((f: FlightOffer) => {
-      const price = Number(f.price.total);
-      const stops = f.itineraries[0].segments.length - 1;
-      const airline =
-        f.itineraries[0].segments[0].carrierCode;
+  // Apply filters
+  const { filters, filteredFlights, updateFilter, resetFilters, filterOptions, hasActiveFilters } =
+    useFlightFilters(flights);
 
-      if (price > filters.maxPrice) return false;
+  // Sort results
+  const { sortedFlights, sortField, sortDirection, toggleSort } = useFlightSort(filteredFlights);
 
-      if (filters.stops !== "any") {
-        if (filters.stops === "0" && stops !== 0) return false;
-        if (filters.stops === "1" && stops !== 1) return false;
-        if (filters.stops === "2+" && stops < 2) return false;
-      }
-
-      if (
-        filters.airlines.length &&
-        !filters.airlines.includes(airline)
-      )
-        return false;
-
-      return true;
-    });
-  }, [flights, filters]);
+  // Generate price trend data
+  const priceTrend = usePriceTrend(flights, filteredFlights);
 
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-6">
-      <SearchForm onSearch={setParams} />
-
-      {isLoading && <p>Loading flights...</p>}
-
-      {!!flights.length && (
-        <div className="grid md:grid-cols-[280px_1fr] gap-6">
-          <Filters flights={flights} onChange={setFilters} />
-          <div className="space-y-4">
-            <PriceGraph flights={filteredFlights} />
-            <FlightList flights={filteredFlights} />
-          </div>
+    <div className="space-y-6">
+      {/* Search Form with Share Button */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div className="flex-1 w-full">
+          <SearchForm onSearch={handleSearch} isLoading={isLoading} />
         </div>
+        {searchParams && (
+          <div className="w-full md:w-auto">
+            <ShareButton searchParams={searchParams} />
+          </div>
+        )}
+      </div>
+
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800">{error.message}</p>
+        </div>
+      )}
+
+      {/* Results Section */}
+      {flights.length > 0 && (
+        <>
+          {/* Price Chart */}
+          <PriceChart priceTrend={priceTrend} />
+
+          {/* Filters and Results */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Filter Panel - Sidebar */}
+            <div className="lg:col-span-1">
+              <FilterPanel
+                filters={filters}
+                updateFilter={updateFilter}
+                resetFilters={resetFilters}
+                hasActiveFilters={hasActiveFilters}
+                filterOptions={filterOptions}
+                dictionaries={dictionaries?.carriers}
+                resultCount={filteredFlights.length}
+              />
+            </div>
+
+            {/* Flight Results */}
+            <div className="lg:col-span-3">
+              <SortControls
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSort={toggleSort}
+              />
+              <FlightList flights={sortedFlights} dictionaries={dictionaries} isLoading={isLoading} />
+            </div>  
+          </div>
+        </>
       )}
     </div>
   );
 }
+
+export const Route = createFileRoute('/')({
+  component: FlightSearchPage,
+});
