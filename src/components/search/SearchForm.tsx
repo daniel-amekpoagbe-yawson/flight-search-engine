@@ -103,19 +103,6 @@ export const SearchForm: React.FC<SearchFormProps> = ({ onSearch, isLoading, ini
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle airport selection
-  const selectAirport = (airport: AirportSearchResult, field: 'origin' | 'destination') => {
-    if (field === 'origin') {
-      setOrigin(`${airport.name} (${airport.iataCode})`);
-      setSelectedOrigin(airport.iataCode);
-      setShowOriginSuggestions(false);
-    } else {
-      setDestination(`${airport.name} (${airport.iataCode})`);
-      setSelectedDestination(airport.iataCode);
-      setShowDestinationSuggestions(false);
-    }
-  };
-
   // Store airport names for display persistence
   const [originAirportName, setOriginAirportName] = useState('');
   const [destinationAirportName, setDestinationAirportName] = useState('');
