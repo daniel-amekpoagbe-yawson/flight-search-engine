@@ -171,7 +171,7 @@ bun run dev
 
 ### Live Price Graph
 
-- **4 Stat Cards**: Average, Lowest, Highest, Save % (vs average)
+- **4 Stat Cards**: Average, Lowest, Highest, Save % (average)
 - **Area Chart**: Price distribution (50-item buckets)
 - **Responsive**: 2-column on mobile, 4-column on desktop
 - **Updates**: Instantly as filters change
@@ -279,21 +279,6 @@ bun run lint         # ESLint + TypeScript check
 
 ---
 
-## 🎓 Learning Value
-
-This project demonstrates:
-
-- Advanced React patterns (hooks, memoization, composition)
-- React Query mastery (caching, prefetch, invalidation)
-- TypeScript best practices (strict mode, generics)
-- Performance optimization (memoization, code splitting)
-- API integration (OAuth2, error handling)
-- Responsive design (mobile-first, Tailwind)
-- UX thinking (loading states, error messages, empty states)
-- Component architecture (atomic design, separation of concerns)
-
----
-
 ## 👨‍💻 Author
 
 **Daniel Amekpoagbe**
@@ -309,4 +294,4 @@ For implementation details, see:
 - **Real-time Filtering**: See `src/hooks/useFlights.ts`
 - **UI Components**: See `src/components/`
 
-**Note**: This uses the Amadeus Test Environment. For production, upgrade to production credentials and API URL.
+**Note**: This uses the Amadeus Test Environment keys
