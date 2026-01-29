@@ -106,7 +106,7 @@ export const useFlightFilters = (flights: ProcessedFlight[]) => {
   const initialDurationRange = useMemo(() => getDurationRange(flights), [flights]);
 
   // Initialize filter state with sensible defaults
-  const [filters, setFilters] = useState<FilterState>({
+   const [filters, setFilters] = useState<FilterState>({
     priceRange: initialPriceRange,
     stops: [],
     airlines: [],
